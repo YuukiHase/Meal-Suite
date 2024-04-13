@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-
+import { RouterTestingModule } from "@angular/router/testing";
+import { BackendService } from "src/app/backend.service";
+import { ApiService } from "src/app/services/api.service";
 import { ListTaskComponent } from "./list-task.component";
 
 describe("ListTaskComponent", () => {
@@ -9,6 +11,8 @@ describe("ListTaskComponent", () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [ListTaskComponent],
+			imports: [RouterTestingModule],
+			providers: [ApiService, BackendService],
 		}).compileComponents();
 	});
 

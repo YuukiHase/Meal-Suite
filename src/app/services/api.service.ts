@@ -18,6 +18,10 @@ export class ApiService {
 		return this.backendService.tasks();
 	}
 
+  getTask(taskId: number): Observable<Task> {
+    return this.backendService.task(taskId);
+  }
+
 	completeTask(taskId: number): Observable<Task> {
 		return this.backendService.complete(taskId, true);
 	}

@@ -3,7 +3,7 @@ import { FormBuilder } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
-import { BackendService, Task, User } from "src/app/backend.service";
+import { Task, User } from "src/app/backend.service";
 import { TaskStatus } from "src/app/constants/task.constant";
 import { ApiService } from "src/app/services/api.service";
 
@@ -27,7 +27,6 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	constructor(
 		private route: ActivatedRoute,
 		private router: Router,
-		private backend: BackendService,
 		private apiService: ApiService,
 		private fb: FormBuilder
 	) {}
@@ -45,8 +44,8 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 				const taskId = this.route.snapshot.paramMap.get("taskId");
 				if (taskId) {
 					// If taskId is existed. We create an update page.
-					this.backend
-						.task(+taskId)
+					this.apiService
+						.getTask(+taskId)
 						.pipe(takeUntil(this.destroy$))
 						.subscribe((task) => {
 							if (task) {
