@@ -1,29 +1,37 @@
-<h1>Task Detail</h1>
+<h2 *ngIf="task; else createTask">Edit Task</h2>
+<ng-template #createTask>
+	<h2>Create Task</h2>
+</ng-template>
+
 <ng-container *ngIf="!loading; else isLoading">
 	<form [formGroup]="taskForm">
-		<p *ngIf="task">ID: {{ task.id }}</p>
-		<p>Description: <textarea formControlName="description"></textarea></p>
-		<p *ngIf="task">
-			Assignee:
-			<select formControlName="assigneeId">
+		<div *ngIf="task">
+			<div class="header">ID:</div>
+			<input type="text" class="input" disabled="true" [value]="task.id" />
+		</div>
+		<div class="description-container">
+			<div class="description-header">Description:</div>
+			<textarea formControlName="description" class="input"></textarea>
+		</div>
+		<div *ngIf="task">
+			<div class="header">Assignee:</div>
+			<select formControlName="assigneeId" class="input">
 				<option *ngFor="let user of users" [value]="user.id">
 					{{ user.name }}
 				</option>
 				<option value="">Anonymous</option>
 			</select>
-		</p>
+		</div>
 		<div *ngIf="task">
-			Completed:
-			<div>
+			<div class="header">Completed:</div>
+			<div class="status-container">
 				<input
 					id="completed"
 					type="radio"
 					formControlName="completed"
 					[value]="TaskStatus.Completed"
 				/>
-				<label for="completed">Completed</label>
-			</div>
-			<div>
+				<label for="completed" style="margin-right: 10px">Completed</label>
 				<input
 					id="in-progress"
 					type="radio"
@@ -33,9 +41,26 @@
 				<label for="in-progress">In progress</label>
 			</div>
 		</div>
-		<button type="button" *ngIf="task" (click)="onUpdate()">Update</button>
-		<button type="button" *ngIf="!task" (click)="onCreate()">Create</button>
-		<button type="button" (click)="onBack()">Back</button>
+		<div class="action-container">
+			<button
+				type="button"
+				*ngIf="task"
+				(click)="onUpdate()"
+				class="submit-action"
+			>
+				Update
+			</button>
+			<button
+				type="button"
+				*ngIf="!task"
+				(click)="onCreate()"
+				class="submit-action"
+			>
+				Create
+			</button>
+			<button type="button" (click)="onBack()">Back</button>
+		</div>
 	</form>
 </ng-container>
+
 <ng-template #isLoading>Loading...</ng-template>

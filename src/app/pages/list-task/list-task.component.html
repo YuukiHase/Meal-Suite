@@ -1,9 +1,46 @@
-<h2>Tasks</h2>
+<h2 class="page-title">Tasks Management</h2>
 
-<ul>
-	<li *ngFor="let t of tasks">
-		<a [routerLink]="['/detail', t.id]">
-			Task: {{ t.id }}, {{ t.description }}</a
-		>
-	</li>
-</ul>
+<div class="list-task-container">
+	<button type="button" (click)="onAddNewTask()">Add New Task</button>
+	<table cellspacing="0">
+		<thead>
+			<tr>
+				<th *ngFor="let column of displayColumn">
+					{{ column }}
+				</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr *ngFor="let task of tasks" (click)="onRowSelected(task.id)">
+				<td>
+					{{ task.id }}
+				</td>
+				<td>
+					{{ task.description }}
+				</td>
+				<td>
+					{{ task.assigneeId | userName : users }}
+				</td>
+				<td>
+					{{ task.completed | taskStatus }}
+				</td>
+				<td class="task-action">
+					<button
+						type="button"
+						(click)="$event.stopPropagation(); onTaskCompleted(task.id)"
+						[disabled]="task.completed"
+					>
+						Complete
+					</button>
+					<button
+						type="button"
+						(click)="$event.stopPropagation(); onRowSelected(task.id)"
+					>
+						Edit
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

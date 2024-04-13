@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { BackendService } from "../backend.service";
 import { Observable } from "rxjs";
-import { User } from "../interfaces/user";
+import { BackendService } from "../backend.service";
 import { Task, TaskInput } from "../interfaces/task";
+import { User } from "../interfaces/user";
 
 @Injectable({
 	providedIn: "root",
@@ -12,6 +12,14 @@ export class ApiService {
 
 	getUsers(): Observable<User[]> {
 		return this.backendService.users();
+	}
+
+	getTasks(): Observable<Task[]> {
+		return this.backendService.tasks();
+	}
+
+	completeTask(taskId: number): Observable<Task> {
+		return this.backendService.complete(taskId, true);
 	}
 
 	updateTask(taskId: number, taskInput: TaskInput): Observable<Task> {
