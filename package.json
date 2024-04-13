@@ -17,9 +17,11 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "export NODE_OPTIONS=--openssl-legacy-provider && ng serve",
+    "start": "ng serve",
+    "start:legacy": "export NODE_OPTIONS=--openssl-legacy-provider && ng serve",
     "build": "ng build",
-    "test": "export NODE_OPTIONS=--openssl-legacy-provider && ng test",
+    "test": "ng test",
+    "test:legacy": "export NODE_OPTIONS=--openssl-legacy-provider && ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
