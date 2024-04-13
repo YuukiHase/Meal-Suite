@@ -1,0 +1,41 @@
+<h1>Task Detail</h1>
+<ng-container *ngIf="!loading; else isLoading">
+	<form [formGroup]="taskForm">
+		<p *ngIf="task">ID: {{ task.id }}</p>
+		<p>Description: <textarea formControlName="description"></textarea></p>
+		<p *ngIf="task">
+			Assignee:
+			<select formControlName="assigneeId">
+				<option *ngFor="let user of users" [value]="user.id">
+					{{ user.name }}
+				</option>
+				<option value="">Anonymous</option>
+			</select>
+		</p>
+		<div *ngIf="task">
+			Completed:
+			<div>
+				<input
+					id="completed"
+					type="radio"
+					formControlName="completed"
+					[value]="TaskStatus.Completed"
+				/>
+				<label for="completed">Completed</label>
+			</div>
+			<div>
+				<input
+					id="in-progress"
+					type="radio"
+					formControlName="completed"
+					[value]="TaskStatus.Inprogress"
+				/>
+				<label for="in-progress">In progress</label>
+			</div>
+		</div>
+		<button type="button" *ngIf="task" (click)="onUpdate()">Update</button>
+		<button type="button" *ngIf="!task" (click)="onCreate()">Create</button>
+		<button type="button" (click)="onBack()">Back</button>
+	</form>
+</ng-container>
+<ng-template #isLoading>Loading...</ng-template>
