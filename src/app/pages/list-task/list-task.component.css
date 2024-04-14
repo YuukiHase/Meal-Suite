@@ -24,3 +24,16 @@
 .task-action button {
 	margin-right: 10px;
 }
+
+.header-action-container {
+	display: flex;
+}
+
+.header-action-container button {
+	margin-right: 10px;
+}
+
+.header-action-container .search-input {
+	padding: 10px 20px;
+	border-radius: 25px;
+}

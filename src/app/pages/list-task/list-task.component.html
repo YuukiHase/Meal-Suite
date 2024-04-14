@@ -1,46 +1,58 @@
 <h2 class="page-title">Tasks Management</h2>
 
 <div class="list-task-container">
-	<button type="button" (click)="onAddNewTask()">Add New Task</button>
-	<table cellspacing="0">
-		<thead>
-			<tr>
-				<th *ngFor="let column of displayColumn">
-					{{ column }}
-				</th>
-			</tr>
-		</thead>
+	<div class="header-action-container">
+		<button type="button" (click)="onAddNewTask()">Add New Task</button>
+		<form [formGroup]="searchForm">
+			<input
+				formControlName="search"
+				placeholder="Search Task"
+				class="search-input"
+			/>
+		</form>
+	</div>
+	<ng-container *ngIf="!loading; else isLoading">
+		<table cellspacing="0">
+			<thead>
+				<tr>
+					<th *ngFor="let column of displayColumn">
+						{{ column }}
+					</th>
+				</tr>
+			</thead>
 
-		<tbody>
-			<tr *ngFor="let task of tasks" (click)="onRowSelected(task.id)">
-				<td>
-					{{ task.id }}
-				</td>
-				<td>
-					{{ task.description }}
-				</td>
-				<td>
-					{{ task.assigneeId | userName : users }}
-				</td>
-				<td>
-					{{ task.completed | taskStatus }}
-				</td>
-				<td class="task-action">
-					<button
-						type="button"
-						(click)="$event.stopPropagation(); onTaskCompleted(task.id)"
-						[disabled]="task.completed"
-					>
-						Complete
-					</button>
-					<button
-						type="button"
-						(click)="$event.stopPropagation(); onRowSelected(task.id)"
-					>
-						Edit
-					</button>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+			<tbody>
+				<tr *ngFor="let task of filteredTasks" (click)="onRowSelected(task.id)">
+					<td>
+						{{ task.id }}
+					</td>
+					<td>
+						{{ task.description }}
+					</td>
+					<td>
+						{{ task.assigneeId | userName : users }}
+					</td>
+					<td>
+						{{ task.completed | taskStatus }}
+					</td>
+					<td class="task-action">
+						<button
+							type="button"
+							(click)="$event.stopPropagation(); onTaskCompleted(task.id)"
+							[disabled]="task.completed"
+						>
+							Complete
+						</button>
+						<button
+							type="button"
+							(click)="$event.stopPropagation(); onRowSelected(task.id)"
+						>
+							Edit
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</ng-container>
+	<ng-template #isLoading>Loading...</ng-template>
 </div>
