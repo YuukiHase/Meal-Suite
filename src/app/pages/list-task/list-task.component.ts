@@ -1,15 +1,16 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
-import { Subject, combineLatest } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest } from "rxjs";
 import {
 	debounceTime,
 	distinctUntilChanged,
+	map,
+	startWith,
 	take,
 	takeUntil,
 } from "rxjs/operators";
-import { Task } from "src/app/backend.service";
-import { User } from "src/app/interfaces/user";
+import { DisplayTask } from "src/app/interfaces/task";
 import { ApiService } from "src/app/services/api.service";
 import { ListTaskService } from "src/app/services/list-task.service";
 
@@ -20,9 +21,8 @@ import { ListTaskService } from "src/app/services/list-task.service";
 })
 export class ListTaskComponent implements OnInit, OnDestroy {
 	private readonly destroy$ = new Subject<void>();
-	public users: User[] = [];
-	public tasks: Task[] = [];
-	public filteredTasks: Task[] = [];
+	public tasks$: BehaviorSubject<DisplayTask[]> = new BehaviorSubject([]);
+	public filteredTasks$: Observable<DisplayTask[]>;
 	public displayColumn: string[] = [
 		"Task ID",
 		"Description",
@@ -48,30 +48,31 @@ export class ListTaskComponent implements OnInit, OnDestroy {
 		combineLatest([this.apiService.getUsers(), this.apiService.getTasks()])
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(([users, tasks]) => {
-				this.users = users;
-				this.tasks = tasks;
-				this.filteredTasks = tasks;
+				const displayTasks = tasks.map((task) => ({
+					id: task.id,
+					description: task.description,
+					user: users.find((user) => user.id === task.assigneeId),
+					completed: task.completed,
+				}));
+				this.tasks$.next(displayTasks);
 				this.loading = false;
 			});
 
 		const searchControl = this.searchForm.get("search") as FormControl;
-		searchControl.valueChanges
-			.pipe(
-				debounceTime(1000),
-				distinctUntilChanged(),
-				takeUntil(this.destroy$)
+		const searchControlChange$ = searchControl.valueChanges.pipe(
+			debounceTime(1000),
+			startWith(""),
+			distinctUntilChanged()
+		);
+
+		this.filteredTasks$ = combineLatest([
+			this.tasks$,
+			searchControlChange$,
+		]).pipe(
+			map(([tasks, searchValue]) =>
+				this.listTaskService.filterTasks(tasks, searchValue)
 			)
-			.subscribe((searchValue) => {
-				if (searchValue.trim()) {
-					this.filteredTasks = this.listTaskService.filterTasks(
-						this.tasks,
-						this.users,
-						searchValue.trim()
-					);
-				} else {
-					this.filteredTasks = this.tasks;
-				}
-			});
+		);
 	}
 
 	ngOnDestroy(): void {
@@ -88,12 +89,12 @@ export class ListTaskComponent implements OnInit, OnDestroy {
 			.pipe(take(1))
 			.subscribe((res) => {
 				if (res) {
-					this.tasks.find((task) => {
-						if (task.id === taskId) {
-							task.completed = true;
-							return true;
-						}
-					});
+					const newTasks = this.tasks$
+						.getValue()
+						.map((task) =>
+							task.id !== taskId ? task : { ...task, completed: true }
+						);
+					this.tasks$.next(newTasks);
 				}
 			});
 	}

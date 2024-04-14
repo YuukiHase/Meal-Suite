@@ -21,7 +21,7 @@
 				</tr>
 			</thead>
 
-			<tbody>
+			<tbody *ngIf="filteredTasks$ | async as filteredTasks">
 				<tr *ngFor="let task of filteredTasks" (click)="onRowSelected(task.id)">
 					<td>
 						{{ task.id }}
@@ -30,7 +30,7 @@
 						{{ task.description }}
 					</td>
 					<td>
-						{{ task.assigneeId | userName : users }}
+						{{ task.user ? task.user.name : "Anonymous" }}
 					</td>
 					<td>
 						{{ task.completed | taskStatus }}

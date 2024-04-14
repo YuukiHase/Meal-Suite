@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subject } from "rxjs";
+import { Subject, combineLatest } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
 import { Task, User } from "src/app/backend.service";
 import { TaskStatus } from "src/app/constants/task.constant";
@@ -17,6 +17,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	public task: Task;
 	public users: User[] = [];
 	public loading: boolean = false;
+	public isUpdate: boolean = false;
 	public taskForm = this.fb.group({
 		description: [""],
 		assigneeId: [""],
@@ -33,43 +34,39 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.loading = true;
+		const taskId = this.route.snapshot.paramMap.get("taskId");
+		const users$ = this.apiService.getUsers();
+		const task$ = this.apiService.getTask(+taskId);
+		this.isUpdate = taskId !== null;
 
-		// Get all user for Assignee selection.
-		this.apiService
-			.getUsers()
-			.pipe(takeUntil(this.destroy$))
-			.subscribe((users) => {
-				this.users = users;
+		if (this.isUpdate) {
+			combineLatest([users$, task$])
+				.pipe(takeUntil(this.destroy$))
+				.subscribe(([users, task]) => {
+					this.users = users;
 
-				const taskId = this.route.snapshot.paramMap.get("taskId");
-				if (taskId) {
-					// If taskId is existed. We create an update page.
-					this.apiService
-						.getTask(+taskId)
-						.pipe(takeUntil(this.destroy$))
-						.subscribe((task) => {
-							if (task) {
-								this.task = task;
-								this.taskForm.patchValue({
-									description: task.description,
-									assigneeId: task.assigneeId ? task.assigneeId : "",
-									completed: task.completed
-										? TaskStatus.Completed
-										: TaskStatus.Inprogress,
-								});
-								this.loading = false;
-							} else {
-								this.router.navigate(["/detail"]);
-							}
+					if (users && task) {
+						this.task = task;
+						this.taskForm.patchValue({
+							description: task.description,
+							assigneeId: task.assigneeId ? task.assigneeId : "",
+							completed: task.completed
+								? TaskStatus.Completed
+								: TaskStatus.Inprogress,
 						});
-				} else {
-					// Else. We create a create page.
-					this.taskForm.patchValue({
-						assigneeId: users[0].id,
-					});
-					this.loading = false;
-				}
+						this.loading = false;
+					} else {
+						this.router.navigate(["/detail"]);
+					}
+				});
+		} else {
+			users$.pipe(takeUntil(this.destroy$)).subscribe((users) => {
+				this.taskForm.patchValue({
+					assigneeId: users[0].id,
+				});
+				this.loading = false;
 			});
+		}
 	}
 
 	ngOnDestroy(): void {
@@ -81,7 +78,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	}
 
 	onUpdate(): void {
-		if (this.task) {
+		if (this.isUpdate) {
 			this.loading = true;
 			const { description, assigneeId, completed } = this.taskForm.value;
 			this.apiService
@@ -91,19 +88,21 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 					completed: completed === TaskStatus.Completed,
 				})
 				.pipe(take(1))
-				.subscribe((task) => (this.loading = false));
+				.subscribe(() => (this.loading = false));
 		}
 	}
 
 	onCreate(): void {
-		this.loading = true;
-		const { description } = this.taskForm.value;
-		this.apiService
-			.createTask(description)
-			.pipe(take(1))
-			.subscribe((newTask) => {
-				this.router.navigate(["/detail", newTask.id]);
-				this.loading = false;
-			});
+		if (!this.isUpdate) {
+			this.loading = true;
+			const { description } = this.taskForm.value;
+			this.apiService
+				.createTask(description)
+				.pipe(take(1))
+				.subscribe((newTask) => {
+					this.router.navigate(["/detail", newTask.id]);
+					this.loading = false;
+				});
+		}
 	}
 }

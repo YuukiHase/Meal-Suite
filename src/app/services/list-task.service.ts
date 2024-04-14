@@ -1,8 +1,6 @@
 import { Injectable } from "@angular/core";
-import { Task } from "../interfaces/task";
-import { User } from "../interfaces/user";
+import { DisplayTask } from "../interfaces/task";
 import { TaskStatusPipe } from "../pipes/task-status.pipe";
-import { UserNamePipe } from "../pipes/user-name.pipe";
 
 @Injectable({
 	providedIn: "root",
@@ -10,16 +8,20 @@ import { UserNamePipe } from "../pipes/user-name.pipe";
 export class ListTaskService {
 	constructor() {}
 
-	filterTasks(tasks: Task[], users: User[], searchString: string): Task[] {
-		const userNamePipe = new UserNamePipe();
+	filterTasks(tasks: DisplayTask[], searchString: string): DisplayTask[] {
+		if (searchString.trim() === null || searchString.trim() === "") {
+			return tasks;
+		}
+
 		const taskStatusPipe = new TaskStatusPipe();
 		const mappedTask = tasks.map((task) => ({
-			...task,
-			assigneeId: userNamePipe.transform(+task.assigneeId, users),
+			id: task.id,
+			description: task.description,
+			userName: task.user ? task.user.name : "Anonymous",
 			completed: taskStatusPipe.transform(task.completed),
 		}));
 
-		const filteredTask: Task[] = [];
+		const filteredTask: DisplayTask[] = [];
 
 		mappedTask.filter((obj, index) =>
 			Object.values(obj).some((value) => {

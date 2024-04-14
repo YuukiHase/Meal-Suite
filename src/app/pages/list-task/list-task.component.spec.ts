@@ -3,10 +3,9 @@ import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { RouterTestingModule } from "@angular/router/testing";
 import { of } from "rxjs";
 import { BackendService } from "src/app/backend.service";
-import { Task } from "src/app/interfaces/task";
+import { DisplayTask } from "src/app/interfaces/task";
 import { User } from "src/app/interfaces/user";
 import { TaskStatusPipe } from "src/app/pipes/task-status.pipe";
-import { UserNamePipe } from "src/app/pipes/user-name.pipe";
 import { ApiService } from "src/app/services/api.service";
 import { ListTaskComponent } from "./list-task.component";
 
@@ -17,24 +16,24 @@ describe("ListTaskComponent", () => {
 		{ id: 1, name: "Tommy" },
 		{ id: 2, name: "James" },
 	];
-	const mockTasks: Task[] = [
+	const mockTasks: DisplayTask[] = [
 		{
 			id: 0,
 			description: "Task Mock 01",
-			assigneeId: 1,
+			user: mockUsers[0],
 			completed: false,
 		},
 		{
 			id: 1,
 			description: "Task Mock 02",
-			assigneeId: 2,
+			user: mockUsers[1],
 			completed: false,
 		},
 	];
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [ListTaskComponent, UserNamePipe, TaskStatusPipe],
+			declarations: [ListTaskComponent, TaskStatusPipe],
 			imports: [RouterTestingModule, ReactiveFormsModule],
 			providers: [ApiService, BackendService, FormBuilder],
 		}).compileComponents();
@@ -72,8 +71,8 @@ describe("ListTaskComponent", () => {
 
 	describe("onTaskCompleted", () => {
 		it("should update completed property of task to true", () => {
-			component.tasks = mockTasks;
-			const mockTask: Task = mockTasks[0];
+			component.tasks$.next(mockTasks);
+			const mockTask: DisplayTask = mockTasks[0];
 			spyOn(component["apiService"], "completeTask");
 			(component["apiService"].completeTask as jasmine.Spy).and.returnValue(
 				of(mockTask)
@@ -82,7 +81,7 @@ describe("ListTaskComponent", () => {
 			expect(component["apiService"].completeTask).toHaveBeenCalledWith(
 				mockTask.id
 			);
-			expect(component.tasks[0].completed).toBeTruthy();
+			expect(component.tasks$.getValue()[0].completed).toBeTruthy();
 		});
 	});
 
@@ -91,15 +90,13 @@ describe("ListTaskComponent", () => {
 		spyOn(component["apiService"], "getUsers").and.returnValue(of(mockUsers));
 		spyOn(component["apiService"], "getTasks").and.returnValue(of(mockTasks));
 
-		expect(component.users.length).toBe(0);
-		expect(component.tasks.length).toBe(0);
+		expect(component.tasks$.getValue().length).toBe(0);
 		expect(listTaskComponentElement.querySelector("table")).toBeNull();
 
 		component.ngOnInit();
 		fixture.detectChanges();
 
-		expect(component.tasks.length).toBe(mockUsers.length);
-		expect(component.tasks.length).toBe(mockTasks.length);
+		expect(component.tasks$.getValue().length).toBe(mockTasks.length);
 		expect(listTaskComponentElement.querySelector("table")).toBeTruthy();
 	});
 });

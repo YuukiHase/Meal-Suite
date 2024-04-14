@@ -16,10 +16,10 @@
 		<div *ngIf="task">
 			<div class="header">Assignee:</div>
 			<select formControlName="assigneeId" class="input">
+				<option value="">Anonymous</option>
 				<option *ngFor="let user of users" [value]="user.id">
 					{{ user.name }}
 				</option>
-				<option value="">Anonymous</option>
 			</select>
 		</div>
 		<div *ngIf="task">
