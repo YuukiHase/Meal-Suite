@@ -1,69 +1,79 @@
-<h2 *ngIf="task; else createTask">Edit Task</h2>
-<ng-template #createTask>
-	<h2>Create Task</h2>
-</ng-template>
+<mat-card>
+	<mat-card-title>Task Detail</mat-card-title>
+	<mat-card-subtitle *ngIf="task; else createTask">Edit</mat-card-subtitle>
+	<ng-template #createTask>
+		<mat-card-subtitle>Create</mat-card-subtitle>
+	</ng-template>
+	<mat-card-content>
+		<ng-container *ngIf="!loading; else isLoading">
+			<form [formGroup]="taskForm">
+				<mat-form-field *ngIf="task" class="full-width" appearance="fill">
+					<mat-label>Task ID</mat-label>
+					<input matInput disabled [value]="task.id" />
+				</mat-form-field>
+				<mat-form-field class="full-width" appearance="fill">
+					<mat-label>Description</mat-label>
+					<textarea
+						matInput
+						formControlName="description"
+						placeholder="Ex. Something need to do..."
+						required
+					></textarea>
+					<mat-error
+						*ngIf="
+							(taskForm.touched || taskForm.dirty) &&
+							taskForm.get('description')?.getError('required')
+						"
+					>
+						Description is required!
+					</mat-error>
+				</mat-form-field>
+				<mat-form-field *ngIf="task" appearance="fill">
+					<mat-label>Assignee</mat-label>
+					<mat-select formControlName="assigneeId">
+						<mat-option value="">Anonymous</mat-option>
+						<mat-option *ngFor="let user of users" [value]="user.id">{{
+							user.name
+						}}</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<div *ngIf="task">
+					<mat-label>Task Status: </mat-label>
+					<mat-radio-group aria-label="Task Status" formControlName="completed">
+						<mat-radio-button [value]="true">{{
+							TaskStatus.Completed
+						}}</mat-radio-button>
+						<mat-radio-button [value]="false">{{
+							TaskStatus.Inprogress
+						}}</mat-radio-button>
+					</mat-radio-group>
+				</div>
+			</form>
+		</ng-container>
 
-<ng-container *ngIf="!loading; else isLoading">
-	<form [formGroup]="taskForm">
-		<div *ngIf="task">
-			<div class="header">ID:</div>
-			<input type="text" class="input" disabled="true" [value]="task.id" />
-		</div>
-		<div class="description-container">
-			<div class="description-header">Description:</div>
-			<textarea formControlName="description" class="input"></textarea>
-			<span class="error" *ngIf="(taskForm.touched || taskForm.dirty) &&taskForm.get('description')?.getError('required')">Description is required!</span>
-		</div>
-		<div *ngIf="task">
-			<div class="header">Assignee:</div>
-			<select formControlName="assigneeId" class="input">
-				<option value="">Anonymous</option>
-				<option *ngFor="let user of users" [value]="user.id">
-					{{ user.name }}
-				</option>
-			</select>
-		</div>
-		<div *ngIf="task">
-			<div class="header">Completed:</div>
-			<div class="status-container">
-				<input
-					id="completed"
-					type="radio"
-					formControlName="completed"
-					[value]="TaskStatus.Completed"
-				/>
-				<label for="completed" style="margin-right: 10px">Completed</label>
-				<input
-					id="in-progress"
-					type="radio"
-					formControlName="completed"
-					[value]="TaskStatus.Inprogress"
-				/>
-				<label for="in-progress">In progress</label>
-			</div>
-		</div>
-		<div class="action-container">
-			<button
-				type="button"
-				*ngIf="task"
-				(click)="onUpdate()"
-        [disabled]="taskForm.invalid"
-				class="submit-action"
-			>
-				Update
-			</button>
-			<button
-				type="button"
-				*ngIf="!task"
-				(click)="onCreate()"
-        [disabled]="taskForm.invalid"
-				class="submit-action"
-			>
-				Create
-			</button>
-			<button type="button" (click)="onBack()">Back</button>
-		</div>
-	</form>
-</ng-container>
-
-<ng-template #isLoading>Loading...</ng-template>
+		<ng-template #isLoading>
+			<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+		</ng-template>
+	</mat-card-content>
+	<mat-card-actions>
+		<button
+			mat-raised-button
+			color="primary"
+			*ngIf="task"
+			(click)="onUpdate()"
+			[disabled]="taskForm.invalid"
+		>
+			Update
+		</button>
+		<button
+			mat-raised-button
+			color="primary"
+			*ngIf="!task"
+			(click)="onCreate()"
+			[disabled]="taskForm.invalid"
+		>
+			Create
+		</button>
+		<button mat-stroked-button (click)="onBack()">Back</button>
+	</mat-card-actions>
+</mat-card>

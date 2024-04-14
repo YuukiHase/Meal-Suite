@@ -1,14 +1,14 @@
 <h2 class="page-title">Tasks Management</h2>
-
 <div class="list-task-container">
 	<div class="header-action-container">
-		<button type="button" (click)="onAddNewTask()">Add New Task</button>
+		<button mat-raised-button color="primary" (click)="onAddNewTask()">
+			Add New Task
+		</button>
 		<form [formGroup]="searchForm">
-			<input
-				formControlName="search"
-				placeholder="Search Task"
-				class="search-input"
-			/>
+			<mat-form-field appearance="standard">
+				<mat-label>Search Task</mat-label>
+				<input matInput placeholder="Ex. abc" formControlName="search" />
+			</mat-form-field>
 		</form>
 	</div>
 	<ng-container *ngIf="!loading; else isLoading">
@@ -37,14 +37,16 @@
 					</td>
 					<td class="task-action">
 						<button
-							type="button"
+							mat-raised-button
+							color="primary"
 							(click)="$event.stopPropagation(); onTaskCompleted(task.id)"
 							[disabled]="task.completed"
 						>
 							Complete
 						</button>
 						<button
-							type="button"
+							mat-raised-button
+							color="primary"
 							(click)="$event.stopPropagation(); onRowSelected(task.id)"
 						>
 							Edit
@@ -54,5 +56,7 @@
 			</tbody>
 		</table>
 	</ng-container>
-	<ng-template #isLoading>Loading...</ng-template>
+	<ng-template #isLoading>
+		<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+	</ng-template>
 </div>

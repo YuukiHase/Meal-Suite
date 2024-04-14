@@ -21,7 +21,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	public taskForm = this.fb.group({
 		description: ["", [Validators.required]],
 		assigneeId: [""],
-		completed: [TaskStatus.Completed],
+		completed: [false],
 	});
 	public TaskStatus = TaskStatus;
 
@@ -50,9 +50,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 						this.taskForm.patchValue({
 							description: task.description,
 							assigneeId: task.assigneeId ? task.assigneeId : "",
-							completed: task.completed
-								? TaskStatus.Completed
-								: TaskStatus.Inprogress,
+							completed: task.completed,
 						});
 						this.loading = false;
 					} else {
@@ -85,7 +83,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 				.updateTask(this.task.id, {
 					description,
 					assigneeId: assigneeId ? +assigneeId : null,
-					completed: completed === TaskStatus.Completed,
+					completed: completed,
 				})
 				.pipe(take(1))
 				.subscribe(() => (this.loading = false));

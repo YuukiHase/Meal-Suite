@@ -1,33 +1,7 @@
-form {
+.full-width {
 	width: 100%;
 }
 
-.header {
-	font-weight: bolder;
-}
-
-.input {
-	width: 100%;
-}
-
-.status-container input {
-	margin-right: 5px;
-}
-
-.action-container {
-	margin-top: 10px;
-	text-align: right;
-}
-
-.action-container button {
-	margin-left: 10px;
-}
-
-.action-container .submit-action {
-	background-color: #04aa6d;
-	color: white;
-}
-
-.error {
-  color: red;
+mat-radio-button {
+	margin-right: 10px;
 }
