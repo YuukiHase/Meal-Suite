@@ -1,7 +1,3 @@
-.page-title {
-	margin-bottom: 20px;
-}
-
 .list-task-container {
 	width: 100%;
 }
@@ -10,15 +6,11 @@
 	width: 100%;
 }
 
-.list-task-container table tr th,
-.list-task-container table tr td {
-	padding: 5px 0px;
-}
-
-.list-task-container table tr th {
-	text-align: left;
-	font-weight: bold;
-	border-bottom: 1px solid gray;
+.list-task-container table td,
+.list-task-container table th {
+	white-space: normal;
+	word-wrap: break-word;
+	max-width: 200px;
 }
 
 .task-action button {

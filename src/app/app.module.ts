@@ -8,6 +8,7 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from "@angular/material/select";
+import { MatTableModule } from "@angular/material/table";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppRoutingModule } from "./app-routing.module";
@@ -37,6 +38,7 @@ import { TaskStatusPipe } from "./pipes/task-status.pipe";
 		MatProgressSpinnerModule,
 		MatProgressBarModule,
 		MatCardModule,
+		MatTableModule,
 	],
 	providers: [BackendService],
 	bootstrap: [AppComponent],

@@ -1,18 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { MatTableDataSource } from "@angular/material/table";
 import { Router } from "@angular/router";
-import { BehaviorSubject, Observable, Subject, combineLatest } from "rxjs";
-import {
-	debounceTime,
-	distinctUntilChanged,
-	map,
-	startWith,
-	take,
-	takeUntil,
-} from "rxjs/operators";
+import { BehaviorSubject, Subject, combineLatest } from "rxjs";
+import { take, takeUntil } from "rxjs/operators";
+import { UserType } from "src/app/constants/user.constant";
 import { DisplayTask } from "src/app/interfaces/task";
+import { TaskStatusPipe } from "src/app/pipes/task-status.pipe";
 import { ApiService } from "src/app/services/api.service";
-import { ListTaskService } from "src/app/services/list-task.service";
 
 @Component({
 	selector: "app-list-task",
@@ -22,25 +16,18 @@ import { ListTaskService } from "src/app/services/list-task.service";
 export class ListTaskComponent implements OnInit, OnDestroy {
 	private readonly destroy$ = new Subject<void>();
 	public tasks$: BehaviorSubject<DisplayTask[]> = new BehaviorSubject([]);
-	public filteredTasks$: Observable<DisplayTask[]>;
-	public displayColumn: string[] = [
-		"Task ID",
-		"Description",
-		"Assignee",
-		"Status",
-		"Action",
+	public displayedColumns: string[] = [
+		"taskId",
+		"description",
+		"assignee",
+		"status",
+		"action",
 	];
-	public searchForm: FormGroup = this.fb.group({
-		search: [""],
-	});
+	public dataSource: MatTableDataSource<DisplayTask> = new MatTableDataSource();
 	public loading: boolean = false;
+	public UserType = UserType;
 
-	constructor(
-		private apiService: ApiService,
-		private router: Router,
-		private fb: FormBuilder,
-		private listTaskService: ListTaskService
-	) {}
+	constructor(private apiService: ApiService, private router: Router) {}
 
 	ngOnInit(): void {
 		this.loading = true;
@@ -55,24 +42,27 @@ export class ListTaskComponent implements OnInit, OnDestroy {
 					completed: task.completed,
 				}));
 				this.tasks$.next(displayTasks);
+				this.dataSource.data = displayTasks;
 				this.loading = false;
 			});
 
-		const searchControl = this.searchForm.get("search") as FormControl;
-		const searchControlChange$ = searchControl.valueChanges.pipe(
-			debounceTime(1000),
-			startWith(""),
-			distinctUntilChanged()
-		);
-
-		this.filteredTasks$ = combineLatest([
-			this.tasks$,
-			searchControlChange$,
-		]).pipe(
-			map(([tasks, searchValue]) =>
-				this.listTaskService.filterTasks(tasks, searchValue)
-			)
-		);
+		this.dataSource.filterPredicate = function (
+			task: DisplayTask,
+			filter: string
+		): boolean {
+			const taskStatusPipe = new TaskStatusPipe();
+			const mappedTask = {
+				id: task.id,
+				description: task.description,
+				userName: task.user ? task.user.name : UserType.Anonymous,
+				completed: taskStatusPipe.transform(task.completed),
+			};
+			return Object.values(mappedTask).some((value) => {
+				if (`${value}`.toLowerCase().includes(filter.toLowerCase())) {
+					return true;
+				}
+			});
+		};
 	}
 
 	ngOnDestroy(): void {
@@ -95,11 +85,17 @@ export class ListTaskComponent implements OnInit, OnDestroy {
 							task.id !== taskId ? task : { ...task, completed: true }
 						);
 					this.tasks$.next(newTasks);
+					this.dataSource.data = newTasks;
 				}
 			});
 	}
 
-	onRowSelected(taskId: number): void {
+	onTaskSelected(taskId: number): void {
 		this.router.navigate(["/detail", taskId]);
+	}
+
+	applyFilter(event: Event) {
+		const filterValue = (event.target as HTMLInputElement).value;
+		this.dataSource.filter = filterValue.trim().toLowerCase();
 	}
 }

@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { UserType } from "../constants/user.constant";
 import { DisplayTask } from "../interfaces/task";
 import { TaskStatusPipe } from "../pipes/task-status.pipe";
 
@@ -17,7 +18,7 @@ export class ListTaskService {
 		const mappedTask = tasks.map((task) => ({
 			id: task.id,
 			description: task.description,
-			userName: task.user ? task.user.name : "Anonymous",
+			userName: task.user ? task.user.name : UserType.Anonymous,
 			completed: taskStatusPipe.transform(task.completed),
 		}));
 

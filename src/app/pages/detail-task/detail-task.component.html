@@ -31,7 +31,7 @@
 				<mat-form-field *ngIf="task" appearance="fill">
 					<mat-label>Assignee</mat-label>
 					<mat-select formControlName="assigneeId">
-						<mat-option value="">Anonymous</mat-option>
+						<mat-option value="">{{ UserType.Anonymous }}</mat-option>
 						<mat-option *ngFor="let user of users" [value]="user.id">{{
 							user.name
 						}}</mat-option>

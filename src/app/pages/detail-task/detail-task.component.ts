@@ -5,6 +5,7 @@ import { Subject, combineLatest } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
 import { Task, User } from "src/app/backend.service";
 import { TaskStatus } from "src/app/constants/task.constant";
+import { UserType } from "src/app/constants/user.constant";
 import { ApiService } from "src/app/services/api.service";
 
 @Component({
@@ -24,6 +25,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 		completed: [false],
 	});
 	public TaskStatus = TaskStatus;
+	public UserType = UserType;
 
 	constructor(
 		private route: ActivatedRoute,

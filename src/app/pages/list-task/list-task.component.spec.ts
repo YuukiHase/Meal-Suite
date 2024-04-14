@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatTableModule } from "@angular/material/table";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { of } from "rxjs";
@@ -45,6 +47,8 @@ describe("ListTaskComponent", () => {
 				MatButtonModule,
 				MatInputModule,
 				MatProgressBarModule,
+				MatTableModule,
+				MatCardModule,
 			],
 			providers: [ApiService, BackendService, FormBuilder],
 		}).compileComponents();
@@ -60,11 +64,11 @@ describe("ListTaskComponent", () => {
 		expect(component).toBeTruthy();
 	});
 
-	describe("onRowSelected", () => {
+	describe("onTaskSelected", () => {
 		it("should call navigate method to navigate to /detail/:taskId", () => {
 			spyOn(component["router"], "navigate");
 			const taskId = 1;
-			component.onRowSelected(taskId);
+			component.onTaskSelected(taskId);
 			expect(component["router"].navigate).toHaveBeenCalledWith([
 				"/detail",
 				taskId,
