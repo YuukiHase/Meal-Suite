@@ -21,7 +21,9 @@
     "start:legacy": "export NODE_OPTIONS=--openssl-legacy-provider && ng serve",
     "build": "ng build",
     "test": "ng test",
+    "test:coverage": "ng test --code-coverage",
     "test:legacy": "export NODE_OPTIONS=--openssl-legacy-provider && ng test",
+    "test:legacy:coverage": "export NODE_OPTIONS=--openssl-legacy-provider && ng test --code-coverage",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },

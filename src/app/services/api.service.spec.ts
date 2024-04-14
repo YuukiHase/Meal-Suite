@@ -5,7 +5,7 @@ import { Task, TaskInput } from "../interfaces/task";
 import { User } from "../interfaces/user";
 import { ApiService } from "./api.service";
 
-fdescribe("ApiService", () => {
+describe("ApiService", () => {
 	let service: ApiService;
 	let backendServiceSpy: jasmine.SpyObj<BackendService>;
 
