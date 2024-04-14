@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Subject, combineLatest } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
@@ -19,7 +19,7 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	public loading: boolean = false;
 	public isUpdate: boolean = false;
 	public taskForm = this.fb.group({
-		description: [""],
+		description: ["", [Validators.required]],
 		assigneeId: [""],
 		completed: [TaskStatus.Completed],
 	});

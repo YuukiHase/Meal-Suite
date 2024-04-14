@@ -12,6 +12,7 @@
 		<div class="description-container">
 			<div class="description-header">Description:</div>
 			<textarea formControlName="description" class="input"></textarea>
+			<span class="error" *ngIf="(taskForm.touched || taskForm.dirty) &&taskForm.get('description')?.getError('required')">Description is required!</span>
 		</div>
 		<div *ngIf="task">
 			<div class="header">Assignee:</div>
@@ -46,6 +47,7 @@
 				type="button"
 				*ngIf="task"
 				(click)="onUpdate()"
+        [disabled]="taskForm.invalid"
 				class="submit-action"
 			>
 				Update
@@ -54,6 +56,7 @@
 				type="button"
 				*ngIf="!task"
 				(click)="onCreate()"
+        [disabled]="taskForm.invalid"
 				class="submit-action"
 			>
 				Create

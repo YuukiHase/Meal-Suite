@@ -27,3 +27,7 @@ form {
 	background-color: #04aa6d;
 	color: white;
 }
+
+.error {
+  color: red;
+}
