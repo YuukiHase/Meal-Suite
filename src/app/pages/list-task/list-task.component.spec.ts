@@ -1,5 +1,9 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatInputModule } from "@angular/material/input";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { of } from "rxjs";
 import { BackendService } from "src/app/backend.service";
@@ -34,7 +38,14 @@ describe("ListTaskComponent", () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
 			declarations: [ListTaskComponent, TaskStatusPipe],
-			imports: [RouterTestingModule, ReactiveFormsModule],
+			imports: [
+				RouterTestingModule,
+				ReactiveFormsModule,
+				BrowserAnimationsModule,
+				MatButtonModule,
+				MatInputModule,
+				MatProgressBarModule,
+			],
 			providers: [ApiService, BackendService, FormBuilder],
 		}).compileComponents();
 	});
