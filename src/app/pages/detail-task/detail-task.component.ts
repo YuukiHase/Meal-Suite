@@ -35,13 +35,14 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 	) {}
 
 	ngOnInit(): void {
-		this.loading = true;
 		const taskId = this.route.snapshot.paramMap.get("taskId");
 		const users$ = this.apiService.getUsers();
 		const task$ = this.apiService.getTask(+taskId);
 		this.isUpdate = taskId !== null;
 
 		if (this.isUpdate) {
+			this.loading = true;
+
 			combineLatest([users$, task$])
 				.pipe(takeUntil(this.destroy$))
 				.subscribe(([users, task]) => {
@@ -60,11 +61,8 @@ export class DetailTaskComponent implements OnInit, OnDestroy {
 					}
 				});
 		} else {
-			users$.pipe(takeUntil(this.destroy$)).subscribe((users) => {
-				this.taskForm.patchValue({
-					assigneeId: users[0].id,
-				});
-				this.loading = false;
+			this.taskForm.patchValue({
+				assigneeId: "",
 			});
 		}
 	}
